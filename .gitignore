@@ -1,0 +1,15 @@
+﻿# IntelliJ IDEA
+*.iml
+.idea/workspace.xml
+.idea/shelf/
+out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Java
+*.class
+target/
