@@ -16,7 +16,7 @@ Colección de ejemplos prácticos de los conceptos fundamentales de la **program
 
 ## Lenguajes
 
-Los ejemplos están escritos en **Python** y **JavaScript** para facilitar la comparación.
+Los ejemplos están escritos en **Python** y **Java** para facilitar la comparación.
 
 ## Conceptos Clave
 
