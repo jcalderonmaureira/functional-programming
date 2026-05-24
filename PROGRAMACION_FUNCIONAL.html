@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programación Funcional — De la Teoría a la Práctica en Java</title>
+<style>
+  /* ── Variables ── */
+  :root {
+    --azul:      #1a4f8a;
+    --azul-claro:#2568b5;
+    --verde:     #1c7a3e;
+    --rojo:      #b52525;
+    --gris-bg:   #f5f7fa;
+    --gris-borde:#d0d7e3;
+    --gris-texto:#333;
+    --amarillo:  #fff8e1;
+    --amarillo-b:#f59e0b;
+    --code-bg:   #1e1e2e;
+    --code-fg:   #cdd6f4;
+    --tag-pura:  #d1fae5;
+    --tag-impura:#fee2e2;
+  }
+
+  /* ── Reset y base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--gris-texto);
+    background: #fff;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* ── Tipografía ── */
+  h1 { font-size: 2rem; color: var(--azul); border-bottom: 3px solid var(--azul); padding-bottom: 12px; margin-bottom: 8px; }
+  h2 { font-size: 1.5rem; color: var(--azul); margin: 48px 0 16px; border-left: 5px solid var(--azul-claro); padding-left: 12px; }
+  h3 { font-size: 1.15rem; color: var(--verde); margin: 28px 0 10px; }
+  h4 { font-size: 1rem; color: #555; margin: 22px 0 8px; font-weight: 600; }
+  p  { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 14px 24px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--azul); }
+  em { color: #555; }
+  a  { color: var(--azul-claro); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Header del documento ── */
+  .doc-header {
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 32px 36px;
+    margin-bottom: 36px;
+  }
+  .doc-header h1 { color: #fff; border-bottom: 2px solid rgba(255,255,255,.3); }
+  .doc-header .meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; font-size: .9rem; opacity: .85; }
+  .doc-header .meta span::before { content: "📌 "; }
+
+  /* ── Tabla de contenidos ── */
+  .toc {
+    background: var(--gris-bg);
+    border: 1px solid var(--gris-borde);
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-bottom: 40px;
+  }
+  .toc h3 { color: var(--azul); margin: 0 0 12px; }
+  .toc ol { margin: 0 0 0 20px; }
+  .toc li { margin: 6px 0; }
+
+  /* ── Bloques de código ── */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 16px 0 20px;
+    font-size: .85rem;
+    line-height: 1.6;
+    border-left: 4px solid var(--azul-claro);
+  }
+  code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+  p > code, li > code, td > code {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: .88rem;
+  }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 22px;
+    font-size: .92rem;
+  }
+  th {
+    background: var(--azul);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--gris-borde); }
+  tr:nth-child(even) td { background: var(--gris-bg); }
+  tr:hover td { background: #eef2ff; }
+
+  /* ── Callouts ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0 20px;
+    border-left: 5px solid;
+    font-size: .93rem;
+  }
+  .callout.info    { background: #e0f2fe; border-color: #0284c7; }
+  .callout.warning { background: var(--amarillo); border-color: var(--amarillo-b); }
+  .callout.tip     { background: #f0fdf4; border-color: var(--verde); }
+  .callout.danger  { background: #fff1f2; border-color: var(--rojo); }
+  .callout-title   { font-weight: 700; margin-bottom: 4px; font-size: .95rem; }
+
+  /* ── Etiquetas de comparación ── */
+  .tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 99px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .tag.pura    { background: var(--tag-pura);  color: #065f46; }
+  .tag.impura  { background: var(--tag-impura); color: #991b1b; }
+  .tag.nuevo   { background: #dbeafe; color: #1e40af; }
+
+  /* ── Ejercicios ── */
+  .ejercicio {
+    background: #fafafa;
+    border: 2px solid var(--azul-claro);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .ejercicio-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .ejercicio-badge {
+    background: var(--azul);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 99px;
+    font-size: .82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ejercicio-badge.analisis { background: #7c3aed; }
+  .ejercicio-badge.aplicacion { background: var(--verde); }
+  .ejercicio h4 { margin: 0; color: var(--azul); font-size: 1rem; }
+  .ejercicio ol { margin: 10px 0 0 20px; }
+  .ejercicio li { margin-bottom: 8px; }
+
+  /* ── Comparación puro/impuro ── */
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0 20px;
+  }
+  .vs-card {
+    border-radius: 8px;
+    padding: 14px;
+    border: 2px solid;
+  }
+  .vs-card.bien  { border-color: var(--verde);  background: #f0fdf4; }
+  .vs-card.mal   { border-color: var(--rojo);   background: #fff1f2; }
+  .vs-card h5    { margin: 0 0 8px; font-size: .85rem; display: flex; align-items: center; gap: 6px; }
+  .vs-card pre   { margin: 0; border-radius: 6px; font-size: .8rem; border-left: none; }
+
+  /* ── Separadores de sección ── */
+  hr { border: none; border-top: 2px solid var(--gris-borde); margin: 40px 0; }
+
+  /* ── Referencia de archivos ── */
+  .archivo-ref {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    color: var(--verde);
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: .82rem;
+    font-family: monospace;
+    margin: 8px 0 12px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    font-size: .85rem;
+    color: #888;
+    border-top: 1px solid var(--gris-borde);
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<div class="doc-header">
+  <h1>Programación Funcional</h1>
+  <p style="margin:8px 0 0;opacity:.9;font-size:1.05rem">De la teoría a la práctica — con ejemplos en Java</p>
+  <div class="meta">
+    <span>PTEC102 Paradigmas de Programación</span>
+    <span>Lenguaje: Java (Stream API, Records, Lambdas)</span>
+    <span>Repositorio: functional-programming/java/</span>
+  </div>
+</div>
+
+<!-- ══════════════════ TABLA DE CONTENIDOS ══════════════════ -->
+<div class="toc">
+  <h3>📋 Tabla de Contenidos</h3>
+  <ol>
+    <li><a href="#s1">Introducción al Paradigma Funcional</a></li>
+    <li><a href="#s2">Funciones Puras</a></li>
+    <li><a href="#s3">Inmutabilidad</a></li>
+    <li><a href="#s4">Funciones de Orden Superior</a></li>
+    <li><a href="#s5">Map, Filter y Reduce</a></li>
+    <li><a href="#s6">Currying y Aplicación Parcial</a></li>
+    <li><a href="#s7">Composición de Funciones</a></li>
+    <li><a href="#s8">Recursión</a></li>
+    <li><a href="#s9">Functores y Mónadas</a></li>
+    <li><a href="#s10">Fuentes y Referencias</a></li>
+  </ol>
+</div>
+
+<!-- ══════════════════ SECCIÓN 1 ══════════════════ -->
+<h2 id="s1">1. Introducción al Paradigma Funcional</h2>
+
+<h3>¿Qué es la Programación Funcional?</h3>
+<p>La <strong>programación funcional</strong> (FP) trata la computación como la evaluación de <strong>funciones matemáticas</strong>. Se basa en el <strong>λ-cálculo</strong> de Alonzo Church (1930) y se distingue del paradigma imperativo porque describe <em>qué</em> calcular, no <em>cómo</em> ejecutarlo paso a paso.</p>
+
+<table>
+  <thead><tr><th>Año</th><th>Hito</th></tr></thead>
+  <tbody>
+    <tr><td>1930</td><td>Alonzo Church formaliza el λ-cálculo</td></tr>
+    <tr><td>1958</td><td>John McCarthy crea <strong>LISP</strong>, primer lenguaje funcional</td></tr>
+    <tr><td>1987</td><td>Nace <strong>Haskell</strong>, lenguaje puramente funcional</td></tr>
+    <tr><td>2014</td><td><strong>Java 8</strong> incorpora lambdas, Stream API e interfaces funcionales</td></tr>
+    <tr><td>2016+</td><td><strong>Java 16–21</strong> añade records, sealed classes, pattern matching</td></tr>
+  </tbody>
+</table>
+
+<h3>Paradigma Imperativo vs. Funcional</h3>
+<div class="vs-grid">
+  <div class="vs-card mal">
+    <h5>❌ Imperativo — <em>cómo</em></h5>
+    <pre><code>List&lt;Integer&gt; pares = new ArrayList&lt;&gt;();
+for (int n : numeros) {
+    if (n % 2 == 0) {
+        pares.add(n); // mutación
+    }
+}</code></pre>
+  </div>
+  <div class="vs-card bien">
+    <h5>✅ Funcional — <em>qué</em></h5>
+    <pre><code>List&lt;Integer&gt; pares = numeros.stream()
+    .filter(n -> n % 2 == 0)
+    .toList(); // sin mutación</code></pre>
+  </div>
+</div>
+
+<h3>Principios Fundamentales</h3>
+<table>
+  <thead><tr><th>Principio</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Funciones puras</strong></td><td>Mismo input → mismo output, sin efectos secundarios</td></tr>
+    <tr><td><strong>Inmutabilidad</strong></td><td>Los datos no cambian; se crean nuevas versiones</td></tr>
+    <tr><td><strong>HOFs</strong></td><td>Las funciones son valores que se pasan y retornan</td></tr>
+    <tr><td><strong>Composición</strong></td><td>Combinar funciones simples para comportamiento complejo</td></tr>
+    <tr><td><strong>Transparencia referencial</strong></td><td>Una expresión puede sustituirse por su valor sin alterar el programa</td></tr>
+  </tbody>
+</table>
+
+<h3>Java y la Programación Funcional</h3>
+<table>
+  <thead><tr><th>Característica</th><th>Desde</th></tr></thead>
+  <tbody>
+    <tr><td>Lambdas (<code>x -&gt; x * 2</code>)</td><td><span class="tag nuevo">Java 8</span></td></tr>
+    <tr><td>Interfaces funcionales (<code>Function</code>, <code>Predicate</code>)</td><td><span class="tag nuevo">Java 8</span></td></tr>
+    <tr><td>Stream API (<code>map</code>, <code>filter</code>, <code>reduce</code>)</td><td><span class="tag nuevo">Java 8</span></td></tr>
+    <tr><td><code>Optional&lt;T&gt;</code></td><td><span class="tag nuevo">Java 8</span></td></tr>
+    <tr><td>Colecciones inmutables (<code>List.of()</code>)</td><td><span class="tag nuevo">Java 9</span></td></tr>
+    <tr><td>Records</td><td><span class="tag nuevo">Java 16</span></td></tr>
+    <tr><td>Sealed classes + Pattern matching</td><td><span class="tag nuevo">Java 17–21</span></td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 2 ══════════════════ -->
+<h2 id="s2">2. Funciones Puras</h2>
+
+<h3>Definición</h3>
+<p>Una <strong>función pura</strong> cumple exactamente dos condiciones:</p>
+<ol>
+  <li><strong>Determinismo:</strong> dado el mismo input, siempre retorna el mismo output.</li>
+  <li><strong>Sin efectos secundarios:</strong> no modifica ningún estado externo.</li>
+</ol>
+
+<div class="callout tip">
+  <div class="callout-title">💡 Transparencia Referencial</div>
+  Una expresión tiene <em>transparencia referencial</em> si puede reemplazarse por su valor sin cambiar el comportamiento del programa. Por ejemplo: <code>suma(3,4)</code> puede reemplazarse por <code>7</code> en cualquier parte del código.
+</div>
+
+<h3>Funciones Puras vs. Impuras</h3>
+<table>
+  <thead><tr><th>Criterio</th><th><span class="tag pura">Pura</span></th><th><span class="tag impura">Impura</span></th></tr></thead>
+  <tbody>
+    <tr><td>Mismo input → mismo output</td><td>✅</td><td>❌</td></tr>
+    <tr><td>Sin efectos secundarios</td><td>✅</td><td>❌</td></tr>
+    <tr><td>Depende de estado externo</td><td>❌</td><td>✅</td></tr>
+    <tr><td>Fácil de testear</td><td>✅</td><td>❌</td></tr>
+    <tr><td>Paralelizable</td><td>✅</td><td>❌</td></tr>
+  </tbody>
+</table>
+
+<h3>Ejemplo en Java</h3>
+<div class="archivo-ref">📄 funciones_puras/FuncionesPuras.java</div>
+
+<pre><code>// ✅ PURA: sólo depende de sus argumentos
+public static int suma(int a, int b) {
+    return a + b;          // siempre el mismo resultado
+}
+
+// ✅ PURA sobre colecciones: retorna NUEVA lista sin mutar la original
+public static List&lt;Integer&gt; duplicar(List&lt;Integer&gt; lista) {
+    return lista.stream()
+                .map(x -> x * 2)
+                .toList();  // lista inmutable nueva
+}
+
+// ❌ IMPURA: modifica estado externo (efecto secundario)
+private static int totalAcumulado = 0;
+public static int sumaImpura(int a, int b) {
+    totalAcumulado += a + b;  // ← efecto secundario
+    return a + b;
+}
+
+// ❌ IMPURA: efecto secundario de I/O
+public static String saludarImpura(String nombre) {
+    System.out.println("Hola, " + nombre); // ← efecto secundario
+    return "Hola, " + nombre + "!";
+}</code></pre>
+
+<div class="callout warning">
+  <div class="callout-title">⚠️ Efectos secundarios comunes a evitar</div>
+  Modificar variables globales, leer/escribir archivos, hacer llamadas de red, generar números aleatorios, obtener la hora actual, lanzar excepciones no controladas.
+</div>
+
+<h3>Ejercicios — Funciones Puras</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 1 — Identificación de pureza</h4>
+  </div>
+  <pre><code>public class Banco {
+    private double saldo = 1000.0;
+
+    public double retirar(double monto) {
+        if (monto > saldo) throw new IllegalArgumentException("Saldo insuficiente");
+        saldo -= monto;
+        return saldo;
+    }
+
+    public static double calcularInteres(double capital, double tasa, int anios) {
+        return capital * Math.pow(1 + tasa, anios);
+    }
+}</code></pre>
+  <ol>
+    <li>¿Cuál de los dos métodos es una función pura? Justifica con los dos criterios de pureza.</li>
+    <li>¿Qué efecto secundario tiene <code>retirar</code>?</li>
+    <li>¿Podría <code>calcularInteres</code> producir resultados distintos dado el mismo input?</li>
+    <li>Reescribe <code>retirar</code> como función pura que retorne un nuevo objeto <code>Cuenta</code> con el saldo actualizado.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 2 — Implementar funciones puras</h4>
+  </div>
+  <p>Implementa las siguientes funciones puras. Ninguna debe modificar sus argumentos ni referenciar estado externo:</p>
+  <pre><code>// a) Retorna true si todos los elementos son positivos
+public static boolean todosPositivos(List&lt;Integer&gt; lista) { /* ... */ }
+
+// b) Retorna el máximo de una lista
+public static int maximo(List&lt;Integer&gt; lista) { /* ... */ }
+
+// c) Filtra y transforma en un solo paso
+public static &lt;T, R&gt; List&lt;R&gt; filtrarYTransformar(
+        List&lt;T&gt; lista, Predicate&lt;T&gt; pred, Function&lt;T, R&gt; f) { /* ... */ }</code></pre>
+  <p>Escribe al menos dos pruebas para cada función que demuestren el determinismo.</p>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 3 — Memoización</h4>
+  </div>
+  <p>Implementa un método genérico <code>memoize</code> que convierta cualquier <code>Function&lt;T, R&gt;</code> en su versión memoizada:</p>
+  <pre><code>public static &lt;T, R&gt; Function&lt;T, R&gt; memoize(Function&lt;T, R&gt; fn) {
+    Map&lt;T, R&gt; cache = new HashMap&lt;&gt;();
+    return input -> cache.computeIfAbsent(input, fn);
+}</code></pre>
+  <ol>
+    <li>¿Por qué la memoización sólo es válida para funciones puras?</li>
+    <li>Aplica <code>memoize</code> a una función que calcule el n-ésimo número primo y compara tiempos de ejecución con y sin caché para <code>n = 10_000</code>.</li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 3 ══════════════════ -->
+<h2 id="s3">3. Inmutabilidad</h2>
+
+<h3>Teoría</h3>
+<p>En programación funcional los datos son <strong>inmutables</strong>: una vez creado un valor, no puede cambiar. En lugar de modificar un objeto, se crea uno nuevo con los cambios deseados.</p>
+
+<h3>Herramientas de Inmutabilidad en Java</h3>
+<table>
+  <thead><tr><th>Herramienta</th><th>Qué hace</th></tr></thead>
+  <tbody>
+    <tr><td><code>final</code></td><td>Prohíbe reasignación de la referencia</td></tr>
+    <tr><td><code>record</code></td><td>Clase de datos inmutable: campos <code>final</code>, sin setters</td></tr>
+    <tr><td><code>List.of()</code></td><td>Lista no modificable (lanza excepción si se intenta cambiar)</td></tr>
+    <tr><td><code>Collections.unmodifiableList()</code></td><td>Vista no modificable de una lista existente</td></tr>
+    <tr><td><code>String</code></td><td>Inmutable por diseño en Java</td></tr>
+  </tbody>
+</table>
+
+<h3>Ejemplo en Java — Records</h3>
+<div class="archivo-ref">📄 inmutabilidad/Inmutabilidad.java</div>
+
+<pre><code>// Record: inmutable por definición — campos final, sin setters
+record Punto(double x, double y) {
+
+    // En vez de modificar, retorna un NUEVO Punto
+    Punto mover(double dx, double dy) {
+        return new Punto(x + dx, y + dy);
+    }
+}
+
+// Record con validación en el compact constructor
+record Precio(double valor, String moneda) {
+    Precio {
+        if (valor &lt; 0) throw new IllegalArgumentException("Precio negativo");
+        moneda = moneda.toUpperCase();  // normaliza al crear
+    }
+
+    Precio aplicarDescuento(double porcentaje) {
+        return new Precio(valor * (1 - porcentaje / 100), moneda);
+    }
+}
+
+// ── Demostración de inmutabilidad ─────────────────────────
+var p1 = new Punto(0, 0);
+var p2 = p1.mover(3, 4);
+// p1 sigue siendo Punto[x=0.0, y=0.0] ← sin cambios
+// p2 es un NUEVO objeto Punto[x=3.0, y=4.0]</code></pre>
+
+<h3>Mutable vs. Inmutable en Colecciones</h3>
+<div class="vs-grid">
+  <div class="vs-card mal">
+    <h5>❌ Mutable</h5>
+    <pre><code>static void agregarImpuesto(
+        double[] precios, double tasa) {
+    for (int i = 0; i &lt; precios.length; i++) {
+        precios[i] *= (1 + tasa); // MUTA
+    }
+}</code></pre>
+  </div>
+  <div class="vs-card bien">
+    <h5>✅ Inmutable</h5>
+    <pre><code>static List&lt;Double&gt; agregarImpuesto(
+        List&lt;Double&gt; precios, double tasa) {
+    return precios.stream()
+        .map(p -> p * (1 + tasa))
+        .toList(); // nueva lista
+}</code></pre>
+  </div>
+</div>
+
+<h3>Ejercicios — Inmutabilidad</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 4 — Trazar ejecución con records</h4>
+  </div>
+  <pre><code>record Temperatura(double valor, String unidad) {
+    Temperatura aFahrenheit() {
+        if (unidad.equals("C")) return new Temperatura(valor * 9.0/5.0 + 32, "F");
+        return this;
+    }
+}
+
+var t1 = new Temperatura(100, "C");
+var t2 = t1.aFahrenheit();
+System.out.println(t1);        // (A)
+System.out.println(t2);        // (B)
+System.out.println(t1 == t2);  // (C)</code></pre>
+  <ol>
+    <li>¿Qué imprime cada línea (A), (B) y (C)?</li>
+    <li>¿Por qué <code>t1 == t2</code> da <code>false</code>?</li>
+    <li>¿Es <code>Temperatura</code> completamente inmutable? ¿Tiene alguna vulnerabilidad?</li>
+    <li>¿Cómo generaría <code>equals</code> el record? ¿Necesitas sobreescribirlo?</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 5 — Inventario inmutable</h4>
+  </div>
+  <p>Modela un sistema de gestión de inventario completamente inmutable:</p>
+  <pre><code>record Producto(String id, String nombre, int stock, double precio) {}
+record Inventario(List&lt;Producto&gt; productos) {}</code></pre>
+  <p>Implementa como métodos de <code>Inventario</code> (sin modificar <code>this.productos</code>):</p>
+  <ul>
+    <li><code>agregarProducto(Producto p)</code> → retorna nuevo <code>Inventario</code></li>
+    <li><code>actualizarStock(String id, int nuevoStock)</code> → retorna nuevo <code>Inventario</code></li>
+    <li><code>aplicarDescuentoGeneral(double porcentaje)</code> → retorna nuevo <code>Inventario</code></li>
+    <li><code>buscar(String id)</code> → retorna <code>Optional&lt;Producto&gt;</code></li>
+  </ul>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 6 — Concatenación de Strings</h4>
+  </div>
+  <pre><code>String resultado = "";
+for (String palabra : List.of("Hola", " ", "mundo", "!")) {
+    resultado += palabra;  // ¿Cuántos objetos String se crean?
+}</code></pre>
+  <ol>
+    <li>¿Cuántos objetos <code>String</code> se crean en total? Traza la ejecución.</li>
+    <li>¿Por qué esto puede ser ineficiente con miles de palabras?</li>
+    <li>Reescríbelo con <code>Stream.reduce</code> o <code>Collectors.joining</code>.</li>
+    <li>¿La versión funcional crea menos objetos? Explica.</li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 4 ══════════════════ -->
+<h2 id="s4">4. Funciones de Orden Superior</h2>
+
+<h3>Definición</h3>
+<p>Una <strong>función de orden superior</strong> (HOF) es una función que <strong>recibe funciones como argumentos</strong> y/o <strong>retorna funciones como resultado</strong>.</p>
+
+<h3>Interfaces Funcionales en Java</h3>
+<table>
+  <thead><tr><th>Interfaz</th><th>Firma</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>R apply(T t)</code></td><td>Transforma T en R</td></tr>
+    <tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>R apply(T t, U u)</code></td><td>Transforma T y U en R</td></tr>
+    <tr><td><code>UnaryOperator&lt;T&gt;</code></td><td><code>T apply(T t)</code></td><td>Caso especial: T → T</td></tr>
+    <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>boolean test(T t)</code></td><td>Condición sobre T</td></tr>
+    <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>void accept(T t)</code></td><td>Consume T sin retorno</td></tr>
+    <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>T get()</code></td><td>Produce T sin input</td></tr>
+  </tbody>
+</table>
+
+<h3>Lambdas y Referencias a Métodos</h3>
+<pre><code>// Lambda: implementación anónima de interfaz funcional
+Function&lt;Integer, Integer&gt; doble   = x -> x * 2;
+Predicate&lt;String&gt;          noVacio = s -> !s.isBlank();
+
+// Method references — cuatro formas:
+Function&lt;String, Integer&gt;  parsear    = Integer::parseInt;          // 1. estático
+Function&lt;String, String&gt;   mayus      = String::toUpperCase;        // 2. de instancia
+Consumer&lt;String&gt;           imprimir   = System.out::println;        // 3. instancia específica
+Function&lt;String, StringBuilder&gt; crear = StringBuilder::new;        // 4. constructor</code></pre>
+
+<h3>HOF como Estrategia y HOF que Retorna Función</h3>
+<pre><code>// HOF que recibe función: aplica estrategia de ordenamiento
+public static &lt;T&gt; List&lt;T&gt; ordenar(List&lt;T&gt; lista, Comparator&lt;T&gt; criterio) {
+    return lista.stream().sorted(criterio).toList();
+}
+// Uso con distintas estrategias:
+ordenar(personas, Comparator.naturalOrder());
+ordenar(personas, Comparator.comparingInt(String::length));
+
+// HOF que RETORNA función: fábrica de validadores
+public static Predicate&lt;Double&gt; enRango(double min, double max) {
+    return valor -> valor &gt;= min &amp;&amp; valor &lt;= max;
+}
+Predicate&lt;Double&gt; precioValido = enRango(0, 10_000);
+Predicate&lt;Double&gt; tempValida   = enRango(-273.15, 1_000_000);</code></pre>
+
+<h3>Ejercicios — Funciones de Orden Superior</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 7 — Trazar una HOF</h4>
+  </div>
+  <pre><code>public static &lt;T, R&gt; List&lt;R&gt; transformarSiCumple(
+        List&lt;T&gt; lista, Predicate&lt;T&gt; condicion,
+        Function&lt;T, R&gt; transformar, R valorPorDefecto) {
+    return lista.stream()
+        .map(elem -> condicion.test(elem)
+                    ? transformar.apply(elem)
+                    : valorPorDefecto)
+        .toList();
+}
+var resultado = transformarSiCumple(
+    List.of(4, -2, 9, 0, 7), n -> n > 0, n -> n * n, -1);</code></pre>
+  <ol>
+    <li>¿Qué contiene <code>resultado</code>?</li>
+    <li>¿Cuántos argumentos de tipo función recibe <code>transformarSiCumple</code>?</li>
+    <li>Reescribe la llamada usando method references donde sea posible.</li>
+    <li>¿Es <code>transformarSiCumple</code> una función pura?</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 8 — Implementar map, filter y reduce manualmente</h4>
+  </div>
+  <p>Implementa las siguientes HOFs genéricas <strong>sin usar la Stream API</strong>:</p>
+  <pre><code>public static &lt;T, R&gt; List&lt;R&gt; miMap(List&lt;T&gt; lista, Function&lt;T, R&gt; f) { /* ... */ }
+public static &lt;T&gt; List&lt;T&gt;   miFilter(List&lt;T&gt; lista, Predicate&lt;T&gt; p) { /* ... */ }
+public static &lt;T, R&gt; R       miReduce(List&lt;T&gt; lista, R inicial,
+                                       BiFunction&lt;R, T, R&gt; comb) { /* ... */ }</code></pre>
+  <p>Verifica que reproduzcan este pipeline de la Stream API:</p>
+  <pre><code>// Suma de cuadrados de números impares en [1..10]
+int resultado = List.of(1,2,3,4,5,6,7,8,9,10).stream()
+    .filter(n -> n % 2 != 0)
+    .map(n -> n * n)
+    .reduce(0, Integer::sum);</code></pre>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 9 — Pipeline de validación</h4>
+  </div>
+  <p>Implementa un mini-framework de validación usando HOFs:</p>
+  <pre><code>record ResultadoValidacion(boolean valido, List&lt;String&gt; errores) {}
+
+@FunctionalInterface
+interface Regla&lt;T&gt; {
+    Optional&lt;String&gt; validar(T valor);
+}
+
+public static &lt;T&gt; ResultadoValidacion validar(T valor, List&lt;Regla&lt;T&gt;&gt; reglas) { /* ... */ }</code></pre>
+  <p>Implementa reglas para un nombre de usuario: no vacío, longitud 3–20, solo letras/números/guión, no comienza con número.</p>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 5 ══════════════════ -->
+<h2 id="s5">5. Map, Filter y Reduce</h2>
+
+<h3>Las Tres Operaciones Fundamentales</h3>
+<table>
+  <thead><tr><th>Operación</th><th>Descripción</th><th>Firma</th></tr></thead>
+  <tbody>
+    <tr><td><strong>map</strong></td><td>Transforma cada elemento</td><td><code>List&lt;A&gt; → List&lt;B&gt;</code></td></tr>
+    <tr><td><strong>filter</strong></td><td>Selecciona elementos que cumplen una condición</td><td><code>List&lt;A&gt; → List&lt;A&gt;</code></td></tr>
+    <tr><td><strong>reduce</strong></td><td>Combina todos en un solo valor</td><td><code>List&lt;A&gt; → B</code></td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <div class="callout-title">ℹ️ Lazy Evaluation en Streams</div>
+  Las operaciones intermedias (<code>map</code>, <code>filter</code>) son <strong>lazy</strong>: no se ejecutan hasta que se llama a una operación terminal (<code>toList</code>, <code>reduce</code>, <code>findFirst</code>). Esto permite optimizaciones importantes.
+</div>
+
+<h3>Ejemplo en Java — Stream API</h3>
+<div class="archivo-ref">📄 streams/MapFilterReduce.java</div>
+
+<pre><code>record Producto(String nombre, double precio, String categoria) {}
+
+var productos = List.of(
+    new Producto("Laptop",  1200, "tecnologia"),
+    new Producto("Libro",   25,   "educacion"),
+    new Producto("Monitor", 350,  "tecnologia"),
+    new Producto("Teclado", 80,   "tecnologia")
+);
+
+// map: transforma cada elemento
+var nombres = productos.stream()
+                       .map(Producto::nombre)
+                       .toList();
+// ["Laptop", "Libro", "Monitor", "Teclado"]
+
+// filter: selecciona por condición
+var techBarata = productos.stream()
+                          .filter(p -> p.categoria().equals("tecnologia"))
+                          .filter(p -> p.precio() &lt; 500)
+                          .toList();
+// [Monitor, Teclado]
+
+// reduce: acumula en un valor
+double totalTech = productos.stream()
+                            .filter(p -> p.categoria().equals("tecnologia"))
+                            .mapToDouble(Producto::precio)
+                            .sum();
+// 1630.0
+
+// Pipeline encadenado: nombres en mayúsculas de tech &lt; $500
+var resultado = productos.stream()
+                         .filter(p -> p.categoria().equals("tecnologia"))
+                         .filter(p -> p.precio() &lt; 500)
+                         .map(p -> p.nombre().toUpperCase())
+                         .toList();
+// ["MONITOR", "TECLADO"]
+
+// Agrupar por categoría con Collectors
+Map&lt;String, List&lt;Producto&gt;&gt; porCategoria = productos.stream()
+    .collect(Collectors.groupingBy(Producto::categoria));</code></pre>
+
+<h3>Ejercicios — Map, Filter y Reduce</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 10 — Lazy Evaluation</h4>
+  </div>
+  <pre><code>var numeros = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+var resultado = numeros.stream()
+    .filter(n -> { System.out.println("filter: " + n); return n % 2 == 0; })
+    .map(n -> { System.out.println("map: " + n); return n * n; })
+    .findFirst();</code></pre>
+  <ol>
+    <li>¿Cuántas veces se ejecuta <code>filter</code>? ¿Y <code>map</code>?</li>
+    <li>¿Qué contiene <code>resultado</code>?</li>
+    <li>Si cambias <code>findFirst()</code> por <code>toList()</code>, ¿cambian los conteos?</li>
+    <li>Explica la evaluación perezosa con este ejemplo.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 11 — Análisis de transacciones bancarias</h4>
+  </div>
+  <pre><code>record Transaccion(String id, String tipo, double monto,
+                   String moneda, LocalDate fecha) {}
+
+var transacciones = List.of(
+    new Transaccion("T1", "credito",  500.0, "CLP", LocalDate.of(2024, 1, 15)),
+    new Transaccion("T2", "debito",   200.0, "CLP", LocalDate.of(2024, 1, 20)),
+    new Transaccion("T3", "credito", 1500.0, "USD", LocalDate.of(2024, 2, 5)),
+    new Transaccion("T4", "debito",   800.0, "CLP", LocalDate.of(2024, 2, 10)),
+    new Transaccion("T5", "credito",  300.0, "CLP", LocalDate.of(2024, 3, 1))
+);</code></pre>
+  <p>Usando <strong>únicamente Stream API</strong> (sin bucles):</p>
+  <ol>
+    <li>Total de créditos en CLP.</li>
+    <li>La transacción de mayor monto.</li>
+    <li>Transacciones de enero 2024, ordenadas por monto descendente.</li>
+    <li><code>Map&lt;String, Double&gt;</code> con suma total por tipo.</li>
+    <li><code>true</code> si existe algún débito mayor a $1000.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 12 — Analizador de texto</h4>
+  </div>
+  <pre><code>String texto = "La programación funcional es elegante y expresiva. " +
+               "Los streams de Java permiten escribir código funcional. " +
+               "La programación funcional evita los efectos secundarios.";</code></pre>
+  <p>Usando streams, obtén:</p>
+  <ol>
+    <li>Frecuencia de cada palabra (<code>Map&lt;String, Long&gt;</code>), ignorando mayúsculas y puntuación.</li>
+    <li>Las 5 palabras más frecuentes (excluyendo palabras de menos de 4 caracteres).</li>
+    <li>El promedio de caracteres por palabra.</li>
+    <li><code>true</code> si el texto contiene alguna palabra de más de 10 caracteres.</li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 6 ══════════════════ -->
+<h2 id="s6">6. Currying y Aplicación Parcial</h2>
+
+<h3>Currying</h3>
+<p><strong>Currying</strong> transforma una función de múltiples argumentos en una secuencia de funciones de un argumento:</p>
+<pre><code>f(a, b, c)  →  f(a)(b)(c)</code></pre>
+
+<h3>Diferencias</h3>
+<table>
+  <thead><tr><th>Característica</th><th>Currying</th><th>Aplicación Parcial</th></tr></thead>
+  <tbody>
+    <tr><td>Argumentos</td><td>Uno a la vez siempre</td><td>Uno o más a la vez</td></tr>
+    <tr><td>Resultado</td><td>Siempre otra función (hasta el último)</td><td>Puede ser valor o función</td></tr>
+    <tr><td>Uso típico</td><td>Composición funcional</td><td>Especialización</td></tr>
+  </tbody>
+</table>
+
+<h3>Ejemplo en Java</h3>
+<div class="archivo-ref">📄 currying/Currying.java</div>
+
+<pre><code>// Curried de 2 argumentos: Function&lt;A, Function&lt;B, C&gt;&gt;
+Function&lt;Integer, Function&lt;Integer, Integer&gt;&gt; suma = a -> b -> a + b;
+
+// Aplicación total:
+suma.apply(3).apply(4);   // → 7
+
+// Aplicación parcial (fijamos el primero):
+var suma5  = suma.apply(5);   // Function&lt;Integer, Integer&gt;
+suma5.apply(8);               // → 13
+suma5.apply(12);              // → 17
+
+// Curried de 3 argumentos
+Function&lt;Double, Function&lt;Double, Function&lt;Double, Double&gt;&gt;&gt; volumen =
+    largo -> ancho -> alto -> largo * ancho * alto;
+
+var volCaja5x5 = volumen.apply(5.0).apply(5.0);  // espera solo el alto
+volCaja5x5.apply(10.0);  // → 250.0
+
+// Utilidad genérica: convertir BiFunction en curried
+static &lt;A, B, C&gt; Function&lt;A, Function&lt;B, C&gt;&gt; curry(BiFunction&lt;A, B, C&gt; f) {
+    return a -> b -> f.apply(a, b);
+}
+
+// Logger especializado con aplicación parcial
+BiFunction&lt;String, String, String&gt; log = (nivel, msg) -> "[" + nivel + "] " + msg;
+Function&lt;String, String&gt; logInfo  = partial(log, "INFO");
+Function&lt;String, String&gt; logError = partial(log, "ERROR");
+logInfo.apply("Servidor iniciado");       // [INFO] Servidor iniciado
+logError.apply("Archivo no encontrado"); // [ERROR] Archivo no encontrado</code></pre>
+
+<h3>Ejercicios — Currying y Aplicación Parcial</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 13 — Trazar función curried</h4>
+  </div>
+  <pre><code>Function&lt;Integer, Function&lt;Integer, Function&lt;Integer, Integer&gt;&gt;&gt; entre =
+    a -> b -> c -> (c - a) / b;
+
+var cadaPas5 = entre.apply(0).apply(5);
+var cadaPas3 = entre.apply(10).apply(3);
+
+System.out.println(cadaPas5.apply(20));   // (A)
+System.out.println(cadaPas5.apply(100));  // (B)
+System.out.println(cadaPas3.apply(25));   // (C)
+System.out.println(entre.apply(0).apply(2).apply(10)); // (D)</code></pre>
+  <ol>
+    <li>¿Qué imprime cada línea? Muestra los cálculos.</li>
+    <li>¿Qué representa matemáticamente <code>entre</code>?</li>
+    <li>¿Cuántas funciones distintas se pueden generar fijando solo el primer argumento?</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 14 — Formateo de textos con currying</h4>
+  </div>
+  <p>Implementa un sistema de formateo usando currying:</p>
+  <pre><code>Function&lt;String, Function&lt;String, String&gt;&gt; envolverEn = ???;
+
+var enNegritas = envolverEn.apply("**");
+var enCodigo   = envolverEn.apply("`");
+
+enNegritas.apply("importante"); // **importante**
+enCodigo.apply("System.out");   // `System.out`
+
+// Y un curried de 3 argumentos con prefijo y sufijo distintos:
+Function&lt;String, Function&lt;String, Function&lt;String, String&gt;&gt;&gt; rodear = ???;
+var enHTML = rodear.apply("&lt;b&gt;").apply("&lt;/b&gt;");</code></pre>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 15 — Generador de consultas SQL</h4>
+  </div>
+  <pre><code>static String consulta(String tabla, String condicion, String orden, int limite) {
+    return String.format("SELECT * FROM %s WHERE %s ORDER BY %s LIMIT %d",
+                         tabla, condicion, orden, limite);
+}</code></pre>
+  <ol>
+    <li>Crea una versión curried de <code>consulta</code>.</li>
+    <li>Genera funciones especializadas: <code>consultaUsuarios</code>, <code>consultaProductos</code>.</li>
+    <li>Genera <code>buscarActivos</code> (tabla + condición fijas) que sólo recibe orden y límite.</li>
+    <li>¿Qué ventaja tiene este enfoque frente a sobrecargar <code>consulta</code>?</li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 7 ══════════════════ -->
+<h2 id="s7">7. Composición de Funciones</h2>
+
+<h3>Teoría</h3>
+<p>La <strong>composición</strong> combina dos funciones para producir una nueva: si <code>f: A → B</code> y <code>g: B → C</code>, entonces <code>g ∘ f: A → C</code> donde <code>(g ∘ f)(x) = g(f(x))</code>.</p>
+
+<table>
+  <thead><tr><th>Estilo</th><th>Notación</th><th>Orden</th><th>En Java</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Pipe</strong></td><td><code>f ▷ g</code></td><td>f primero, luego g</td><td><code>f.andThen(g)</code></td></tr>
+    <tr><td><strong>Compose</strong></td><td><code>g ∘ f</code></td><td>g envuelve f</td><td><code>g.compose(f)</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Ejemplo en Java</h3>
+<div class="archivo-ref">📄 composicion/Composicion.java</div>
+
+<pre><code>// Funciones atómicas reutilizables
+static UnaryOperator&lt;String&gt; limpiar    = String::strip;
+static UnaryOperator&lt;String&gt; normalizar = String::toLowerCase;
+static UnaryOperator&lt;String&gt; capitalizar = s ->
+    Arrays.stream(s.split(" "))
+          .map(w -> Character.toUpperCase(w.charAt(0)) + w.substring(1))
+          .collect(Collectors.joining(" "));
+
+// Utilidad pipe: encadena de izquierda a derecha
+@SafeVarargs
+static &lt;T&gt; Function&lt;T, T&gt; pipe(UnaryOperator&lt;T&gt;... funcs) { ... }
+
+// Composición de 3 pasos simples en 1 función compleja
+var formatear = pipe(limpiar, normalizar, capitalizar);
+formatear.apply("  juan  ");    // "Juan"
+formatear.apply("MARÍA JOSÉ!"); // "María José"
+
+// Extender el pipeline con andThen
+Function&lt;String, String&gt; saludoFormal =
+    ((Function&lt;String, String&gt;) formatear::apply)
+        .andThen(n -> "Estimado/a " + n)
+        .andThen(n -> n + ",");
+saludoFormal.apply("  ana  "); // "Estimada/o Ana,"
+
+// andThen vs compose
+Function&lt;Integer, Integer&gt; doble  = x -> x * 2;
+Function&lt;Integer, Integer&gt; sumar1 = x -> x + 1;
+
+var pipe = doble.andThen(sumar1);   // sumar1(doble(x)) → pipe(5) = 11
+var comp = doble.compose(sumar1);   // doble(sumar1(x)) → comp(5) = 12</code></pre>
+
+<h3>Ejercicios — Composición</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 16 — andThen vs compose</h4>
+  </div>
+  <pre><code>Function&lt;Integer, Integer&gt; f = x -> x + 3;
+Function&lt;Integer, Integer&gt; g = x -> x * 2;
+Function&lt;Integer, Integer&gt; h = x -> x - 1;
+
+Function&lt;Integer, Integer&gt; A = f.andThen(g).andThen(h);
+Function&lt;Integer, Integer&gt; B = h.compose(g).compose(f);
+Function&lt;Integer, Integer&gt; C = f.andThen(g.compose(h));
+Function&lt;Integer, Integer&gt; D = g.andThen(f).compose(h);</code></pre>
+  <ol>
+    <li>Calcula <code>A(4)</code>, <code>B(4)</code>, <code>C(4)</code>, <code>D(4)</code>.</li>
+    <li>¿Son <code>A</code> y <code>B</code> equivalentes? ¿Por qué?</li>
+    <li>Escribe la expresión matemática de cada función.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 17 — Pipeline de validación de usuario</h4>
+  </div>
+  <pre><code>record DatosUsuario(String nombre, String email, String telefono, int edad) {}</code></pre>
+  <p>Implementa y compón:</p>
+  <ul>
+    <li><code>UnaryOperator&lt;String&gt; normalizar</code> — minúsculas + strip</li>
+    <li><code>UnaryOperator&lt;String&gt; capitalizar</code> — primera letra mayúscula por palabra</li>
+    <li><code>Predicate&lt;String&gt; emailValido</code> — contiene @ y dominio</li>
+    <li><code>Predicate&lt;Integer&gt; edadValida</code> — entre 18 y 120</li>
+  </ul>
+  <p>Compónalos en <code>procesarUsuario(DatosUsuario) → Optional&lt;DatosUsuario&gt;</code> que retorna <code>Optional.empty()</code> si alguna validación falla.</p>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 18 — Motor de reglas de descuento</h4>
+  </div>
+  <pre><code>record Orden(String clienteId, double total, boolean esNuevo, int diasSinCompra) {}</code></pre>
+  <p>Crea reglas como <code>UnaryOperator&lt;Double&gt;</code> (reciben el descuento actual y retornan el nuevo):</p>
+  <ul>
+    <li><code>descuentoNuevo</code>: +10% si el cliente es nuevo.</li>
+    <li><code>descuentoFidelidad</code>: +5% si lleva más de 30 días sin comprar.</li>
+    <li><code>descuentoVolumen</code>: +15% si el total supera $500.</li>
+    <li><code>descuentoMaximo</code>: el descuento final no puede superar 25%.</li>
+  </ul>
+  <p>Combínalas con <code>pipe</code> para calcular el descuento total.</p>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 8 ══════════════════ -->
+<h2 id="s8">8. Recursión</h2>
+
+<h3>Teoría</h3>
+<p>La <strong>recursión</strong> es el mecanismo por el que una función se llama a sí misma. En FP reemplaza a los bucles: en lugar de mutar un contador, se avanza hacia el caso base en cada llamada.</p>
+
+<h3>Recursión Normal vs. Recursión de Cola</h3>
+<div class="vs-grid">
+  <div class="vs-card mal">
+    <h5>❌ Recursión normal — pendiente tras llamada</h5>
+    <pre><code>static long factorial(int n) {
+    if (n &lt;= 1) return 1L;
+    return n * factorial(n - 1);
+    // multiplicación PENDIENTE
+}</code></pre>
+  </div>
+  <div class="vs-card bien">
+    <h5>✅ Recursión de cola — nada pendiente</h5>
+    <pre><code>static long factorialTail(int n, long acc) {
+    if (n &lt;= 1) return acc;
+    return factorialTail(n - 1, n * acc);
+    // llamada ES la última operación
+}</code></pre>
+  </div>
+</div>
+
+<div class="callout warning">
+  <div class="callout-title">⚠️ Java y TCO</div>
+  Java <strong>no optimiza</strong> tail-calls automáticamente. Para grandes entradas, usar <code>Stream.iterate()</code> o el patrón <em>trampoline</em>.
+</div>
+
+<h3>Ejemplo en Java</h3>
+<div class="archivo-ref">📄 recursion/Recursion.java</div>
+
+<pre><code>// Fibonacci con memoización
+private static final Map&lt;Integer, Long&gt; memo = new HashMap&lt;&gt;();
+static long fibonacci(int n) {
+    if (n &lt;= 1) return n;
+    return memo.computeIfAbsent(n, k -> fibonacci(k - 1) + fibonacci(k - 2));
+}
+
+// Fibonacci funcional con Stream.iterate (sin stack overflow)
+static List&lt;Long&gt; fibonacciStream(int cantidad) {
+    record Par(long a, long b) {}
+    return Stream.iterate(new Par(0L, 1L), p -> new Par(p.b(), p.a() + p.b()))
+                 .limit(cantidad)
+                 .map(Par::a)
+                 .toList();
+}
+
+// Quicksort funcional — puro, sin mutación
+static List&lt;Integer&gt; quicksort(List&lt;Integer&gt; lista) {
+    if (lista.size() &lt;= 1) return lista;
+    int pivote = lista.getFirst();
+    var menores = lista.stream().skip(1).filter(x -> x &lt;= pivote).toList();
+    var mayores = lista.stream().skip(1).filter(x -> x &gt; pivote).toList();
+    return Stream.concat(
+        Stream.concat(quicksort(menores).stream(), Stream.of(pivote)),
+        quicksort(mayores).stream()
+    ).toList();
+}</code></pre>
+
+<h3>Ejercicios — Recursión</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 19 — Descifrar un algoritmo recursivo</h4>
+  </div>
+  <pre><code>static int misterio(List&lt;Integer&gt; lista) {
+    if (lista.isEmpty()) return 0;
+    if (lista.size() == 1) return lista.getFirst();
+    int mitad = lista.size() / 2;
+    var izq = lista.subList(0, mitad);
+    var der = lista.subList(mitad, lista.size());
+    return Math.max(misterio(izq), misterio(der));
+}</code></pre>
+  <ol>
+    <li>¿Qué calcula <code>misterio</code>? Traza la ejecución para <code>[3, 7, 1, 9, 4]</code>.</li>
+    <li>¿Cuántas llamadas recursivas para <code>n</code> elementos? (O-notation)</li>
+    <li>¿Es recursión de cola? Justifica.</li>
+    <li>Reescribe de forma iterativa y con Stream.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 20 — Funciones exclusivamente recursivas</h4>
+  </div>
+  <p>Implementa sin bucles:</p>
+  <pre><code>// a) Reversa de una lista
+static &lt;T&gt; List&lt;T&gt; revertir(List&lt;T&gt; lista) { /* ... */ }
+
+// b) Verifica si una lista es palíndromo
+static &lt;T&gt; boolean esPalindromo(List&lt;T&gt; lista) { /* ... */ }
+
+// c) Número de Collatz: pasos hasta llegar a 1
+//    Si n es par → n/2. Si n es impar → 3n+1
+static int collatz(int n) { /* ... */ }</code></pre>
+  <p>Para <code>collatz</code>: ¿cuál es el máximo <code>n</code> que Java puede ejecutar sin <code>StackOverflowError</code>?</p>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 21 — Búsqueda binaria recursiva</h4>
+  </div>
+  <pre><code>static &lt;T extends Comparable&lt;T&gt;&gt; Optional&lt;Integer&gt; busquedaBinaria(
+        List&lt;T&gt; lista, T objetivo) { /* ... */ }</code></pre>
+  <ol>
+    <li>Traza la ejecución para <code>[1, 3, 5, 7, 9, 11, 13]</code> y objetivo <code>7</code>.</li>
+    <li>Conviértela a tail-recursive añadiendo <code>inicio</code> y <code>fin</code>.</li>
+    <li>Implementa la misma lógica con <code>Stream.iterate()</code>.</li>
+    <li>¿Cuál de las tres es más eficiente en Java? ¿Por qué?</li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 9 ══════════════════ -->
+<h2 id="s9">9. Functores y Mónadas</h2>
+
+<h3>Functor</h3>
+<p>Un <strong>functor</strong> es un contenedor que puede ser "mapeado" con una función preservando su estructura. La operación clave es <code>map</code>:</p>
+<pre><code>// Optional como functor
+Optional&lt;Integer&gt; num    = Optional.of(5);
+Optional&lt;Integer&gt; doble  = num.map(x -> x * 2);  // Optional[10]
+Optional&lt;String&gt;  s      = Optional.&lt;Integer&gt;empty().map(Object::toString);  // empty</code></pre>
+
+<h3>Mónada</h3>
+<p>Una <strong>mónada</strong> es un functor que además soporta <code>flatMap</code> para evitar el anidamiento de contenedores:</p>
+<pre><code>// map puede anidar: Optional&lt;Optional&lt;T&gt;&gt;
+Optional&lt;Optional&lt;String&gt;&gt; anidado = Optional.of("hola")
+    .map(s -> Optional.of(s.toUpperCase()));  // ❌ Optional[Optional[HOLA]]
+
+// flatMap aplana el resultado: Optional&lt;T&gt;
+Optional&lt;String&gt; correcto = Optional.of("hola")
+    .flatMap(s -> Optional.of(s.toUpperCase()));  // ✅ Optional[HOLA]</code></pre>
+
+<h3>Ejemplo en Java — Maybe y Result</h3>
+<div class="archivo-ref">📄 monadas/Maybe.java · monadas/MonadasDemo.java</div>
+
+<pre><code>// Pipeline con Maybe — sin null-checks manuales
+Maybe&lt;String&gt; ciudad = buscarUsuario(1)
+    .flatMap(MonadasDemo::obtenerDireccion)
+    .flatMap(MonadasDemo::obtenerCiudad);
+// Si CUALQUIER paso falla → Nothing (sin NPE)
+
+System.out.println(ciudad);                           // Just(Bogotá)
+System.out.println(buscarUsuario(2).flatMap(...)
+    .getOrElse("Sin ciudad"));                        // Sin ciudad
+
+// Pattern matching con switch (Java 21+)
+String msg = switch (ciudad) {
+    case Maybe.Just&lt;String&gt; j   -> "Ciudad: " + j.value();
+    case Maybe.Nothing&lt;String&gt; n -> "No hay ciudad";
+};
+
+// Result — para operaciones que pueden fallar con error descriptivo
+Result&lt;Double&gt; ok  = dividir(100, 4).flatMap(MonadasDemo::raizCuadrada);
+Result&lt;Double&gt; err = dividir(100, 0).flatMap(MonadasDemo::raizCuadrada);
+System.out.println(ok);   // Ok(5.0)
+System.out.println(err);  // Err(División por cero)</code></pre>
+
+<h3>Las Tres Leyes de las Mónadas</h3>
+<table>
+  <thead><tr><th>Ley</th><th>Expresión</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Identidad izquierda</strong></td><td><code>of(a).flatMap(f)</code> ≡ <code>f(a)</code></td></tr>
+    <tr><td><strong>Identidad derecha</strong></td><td><code>m.flatMap(of)</code> ≡ <code>m</code></td></tr>
+    <tr><td><strong>Asociatividad</strong></td><td><code>m.flatMap(f).flatMap(g)</code> ≡ <code>m.flatMap(x -> f(x).flatMap(g))</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Ejercicios — Functores y Mónadas</h3>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge analisis">Análisis</span>
+    <h4>Ejercicio 22 — Trazar un pipeline con Optional</h4>
+  </div>
+  <pre><code>Map&lt;String, String&gt; config = Map.of(
+    "db.url", "localhost:5432",
+    "timeout", "abc"
+);
+Optional&lt;Integer&gt; timeout = Optional.ofNullable(config.get("timeout"))
+    .filter(s -> s.matches("\\d+"))
+    .map(Integer::parseInt)
+    .filter(t -> t &gt; 0 &amp;&amp; t &lt; 30000);
+
+Optional&lt;Integer&gt; maxConn = Optional.ofNullable(config.get("max.connections"))
+    .map(Integer::parseInt);</code></pre>
+  <ol>
+    <li>¿Qué contiene <code>timeout</code>? Traza cada paso.</li>
+    <li>¿Qué contiene <code>maxConn</code>? ¿Lanza alguna excepción? ¿Por qué?</li>
+    <li>¿Diferencia entre <code>Optional.of()</code> y <code>Optional.ofNullable()</code>?</li>
+    <li>Reescribe <code>maxConn</code> para manejar clave ausente Y valor no numérico.</li>
+  </ol>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 23 — Procesamiento de pedidos con Optional</h4>
+  </div>
+  <pre><code>record Pedido(String id, String clienteId, List&lt;String&gt; productos, String cuponId) {}
+record Cliente(String id, String email, boolean activo) {}
+record Cupon(String codigo, double descuento, boolean valido) {}</code></pre>
+  <p>Implementa usando <code>flatMap</code> y <code>map</code> (sin <code>if</code> ni <code>null</code> checks):</p>
+  <pre><code>// Flujo: pedido → buscar cliente activo → buscar cupón válido → descuento
+static Optional&lt;Double&gt; calcularDescuento(
+        Pedido pedido,
+        Map&lt;String, Cliente&gt; clientes,
+        Map&lt;String, Cupon&gt; cupones) { /* ... */ }</code></pre>
+</div>
+
+<div class="ejercicio">
+  <div class="ejercicio-header">
+    <span class="ejercicio-badge aplicacion">Aplicación</span>
+    <h4>Ejercicio 24 — Implementar la mónada Resultado&lt;T&gt;</h4>
+  </div>
+  <pre><code>sealed interface Resultado&lt;T&gt; permits Resultado.Exito, Resultado.Fallo {
+    record Exito&lt;T&gt;(T valor)      implements Resultado&lt;T&gt; {}
+    record Fallo&lt;T&gt;(String error) implements Resultado&lt;T&gt; {}
+
+    &lt;R&gt; Resultado&lt;R&gt; map(Function&lt;T, R&gt; f);
+    &lt;R&gt; Resultado&lt;R&gt; flatMap(Function&lt;T, Resultado&lt;R&gt;&gt; f);
+    T getOrElse(T valorPorDefecto);
+    Resultado&lt;T&gt; recover(Function&lt;String, T&gt; recuperador);
+
+    static &lt;T&gt; Resultado&lt;T&gt; exito(T valor) { /* ... */ }
+    static &lt;T&gt; Resultado&lt;T&gt; fallo(String error) { /* ... */ }
+    static &lt;T&gt; Resultado&lt;T&gt; intentar(Supplier&lt;T&gt; accion) { /* ... */ }
+}</code></pre>
+  <p>Verifica que tu implementación cumpla las tres leyes de las mónadas con pruebas concretas.</p>
+</div>
+
+<hr>
+
+<!-- ══════════════════ SECCIÓN 10 ══════════════════ -->
+<h2 id="s10">10. Fuentes y Referencias</h2>
+
+<h3>Libros Fundamentales</h3>
+<table>
+  <thead><tr><th>Título</th><th>Autor(es)</th><th>Año</th><th>Relevancia</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><em>Structure and Interpretation of Computer Programs</em> (SICP)</td>
+      <td>Abelson &amp; Sussman</td><td>1996</td>
+      <td>El clásico de FP; usa Scheme. Lectura fundamental.</td>
+    </tr>
+    <tr>
+      <td><em>Functional Programming in Java</em></td>
+      <td>Pierre-Yves Saumont</td><td>2017</td>
+      <td>FP aplicada directamente al ecosistema Java</td>
+    </tr>
+    <tr>
+      <td><em>Modern Java in Action</em></td>
+      <td>Urma, Fusco, Mycroft</td><td>2018</td>
+      <td>Streams, lambdas, Optional y módulos en Java 8–11</td>
+    </tr>
+    <tr>
+      <td><em>Category Theory for Programmers</em></td>
+      <td>Bartosz Milewski</td><td>2019</td>
+      <td>Fundamentos matemáticos de FP (functores, mónadas)</td>
+    </tr>
+    <tr>
+      <td><em>Haskell Programming from First Principles</em></td>
+      <td>Allen &amp; Moronuki</td><td>2016</td>
+      <td>FP pura; excelente para la teoría y los tipos</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Artículos y Papers Clave</h3>
+<table>
+  <thead><tr><th>Título</th><th>Autor</th><th>Año</th></tr></thead>
+  <tbody>
+    <tr><td>"Why Functional Programming Matters"</td><td>John Hughes</td><td>1990</td></tr>
+    <tr><td>"Can Programming Be Liberated from the Von Neumann Style?"</td><td>John Backus</td><td>1978 — Turing Award Lecture</td></tr>
+    <tr><td>"A History of Haskell: Being Lazy with Class"</td><td>Hudak et al.</td><td>2007 — HOPL III</td></tr>
+  </tbody>
+</table>
+
+<h3>Recursos en Línea</h3>
+<table>
+  <thead><tr><th>Recurso</th><th>URL</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Java Stream API (Javadoc oficial)</td>
+      <td><a href="https://docs.oracle.com/en/java/docs/" target="_blank">docs.oracle.com</a></td>
+      <td>Referencia completa de la API</td>
+    </tr>
+    <tr>
+      <td>Baeldung — Functional Java</td>
+      <td><a href="https://www.baeldung.com/java-functional-programming" target="_blank">baeldung.com</a></td>
+      <td>Tutoriales prácticos con Java</td>
+    </tr>
+    <tr>
+      <td>FP Jargon</td>
+      <td><a href="https://github.com/hemanth/functional-programming-jargon" target="_blank">github.com/hemanth/fp-jargon</a></td>
+      <td>Glosario completo con ejemplos</td>
+    </tr>
+    <tr>
+      <td><em>Mostly Adequate Guide to FP</em></td>
+      <td><a href="https://mostly-adequate.gitbook.io/" target="_blank">mostly-adequate.gitbook.io</a></td>
+      <td>Guía interactiva (conceptos universales)</td>
+    </tr>
+    <tr>
+      <td>Vavr Library</td>
+      <td><a href="https://www.vavr.io" target="_blank">vavr.io</a></td>
+      <td>Librería FP completa para Java</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Cursos en Línea</h3>
+<table>
+  <thead><tr><th>Plataforma</th><th>Curso</th><th>Nivel</th></tr></thead>
+  <tbody>
+    <tr><td>Coursera</td><td><em>Functional Programming Principles in Scala</em> — École Polytechnique</td><td>Intermedio</td></tr>
+    <tr><td>edX</td><td><em>Programming in Haskell</em> — U. of Adelaide</td><td>Intermedio</td></tr>
+    <tr><td>YouTube</td><td><em>Functional Design Patterns</em> — Scott Wlaschin</td><td>Intermedio</td></tr>
+  </tbody>
+</table>
+
+<h3>Librerías Java para FP</h3>
+<table>
+  <thead><tr><th>Librería</th><th>Propósito</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Vavr</strong></td><td>FP completa: colecciones persistentes, Try, Either, Option</td></tr>
+    <tr><td><strong>Project Reactor</strong></td><td>Programación reactiva funcional</td></tr>
+    <tr><td><strong>jOOλ</strong></td><td>Lambdas y Streams extendidos</td></tr>
+    <tr><td><strong>Cyclops</strong></td><td>Extensiones funcionales para Java</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  Material creado para el curso <strong>PTEC102 Paradigmas de Programación</strong>.<br>
+  Los ejemplos de código están disponibles en <code>java/src/main/java/com/paradigmas/fp/</code>
+</div>
+
+</body>
+</html>
